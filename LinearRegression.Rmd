@@ -1,0 +1,167 @@
+---
+title: "Linear Regression - Predicting Individual Medical Costs Billed by Health Insurance"
+author: "Jeneva Williams-Blackwell"
+subtitle: "4/18/2020"
+output: html_document
+---
+
+## Exploratory Data Analysis
+The dataset has 1,338 observations across 7 variables, 4 of which are categorical and the remaining 3 being continuous. Majority of the respondents have no children, live in the Southeast region of the United States, identify as male, and do not smoke at 42.9%, 27.2%, 50.5%, and 79.5%, respectively. Furthermore, the average age of the respondents is 39.2 years with a standard deviation of 14, the average Body Mass Index (BMI) is 30.7 with a standard deviation of 6.1, and lastly, the average insurance charge is 13,270.42 USD with a standard deviation of 12,110 USD. 
+
+```{r warning=FALSE, message=FALSE, results="hide", include=FALSE}
+#set wd
+setwd("/Users/jennablackwell/Desktop/2019 - 2020/Spring 2020/INST408F/Homework 3")
+
+#import dataset 
+insurance <- read.csv("insurance.csv", header = TRUE)
+
+#number of observations 
+nrow(insurance)
+
+#number of variables 
+ncol(insurance)
+
+#percentage of observations for each categorical variable
+round(prop.table(table(insurance$region))*100,1)
+
+round(prop.table(table(insurance$sex))*100,1)
+
+round(prop.table(table(insurance$smoker))*100,1)
+
+#mean and standard deviation for each continuous variable
+round(mean(insurance$age),1)
+round(sd(insurance$age),1)
+
+round(mean(insurance$bmi),1)
+round(sd(insurance$bmi),1)
+
+round(mean(insurance$charges),2)
+round(sd(insurance$charges),1)
+
+```
+
+## Data Visualization
+
+**Figure 1: Individual Medical Costs by Number of Children**    
+
+The boxplot displays that the largest interquartile range for insurance charges corresponds to respondents with two children as 50% of the data falls between 6,257.93 and 20,580.88 USD. In comparison, the smallest interquartile range corresponds to respondents with five children as 50% of the data falls between 5,615.37 and 10,096.97 USD. Also, the highest median for insurance charges corresponds to respondents with four children at 11,033.66 USD, whereas the lowest median corresponds to respondents with one child at 8,483.87 USD. 
+
+**Figure 2: Individual Medical Costs by Geographical Region**
+
+The boxplot displays that the largest interquartile range for insurance charges corresponds to respondents residing in the Southeast region of the United States as 50% of the data falls between 4,432.31 and 19,530.61 USD. In comparison, the smallest interquartile range corresponds to respondents residing in the Southwest region as 50% of the data falls between 4,751.07 and 13,462.52 USD. Also, the highest median for insurance charges corresponds to respondents residing in the Northeast region at 10,057.65 USD, whereas the lowest median corresponds to respondents residing in the Southwest region at 8,798.59 USD. 
+
+**Figure 3: Individual Medical Costs by Sex**
+
+The boxplot displays that for respondents who are male, the insurance charges range from 1,607.51 to 28,476.74 USD with a median of 9,412.96 and for respondents who are female, from 1,121.87 to 40,273.65 USD with a median of 9,369.62 USD. Additionally, 50% of male respondents were charged between 4,883.87 and 14,455.64 USD, whereas 50% of female respondents were charged between 4,591.51 and 19,006.69 USD. 
+
+**Figure 4: Individual Medical Costs by Smoking Status**
+
+The boxplot displays that for respondents who smoke, the insurance charges range from 12,829.46 to 63,770.43 USD with a median of 34,456.35 USD and for respondents who do not smoke, from 1,121.87 to 22,395.74 USD with a median of 7,345.41 USD. Additionally, 50% of respondents who smoke were charged between 20,773.63 and 41,034.22 USD, whereas 50% of respondents who do not smoke were charged between 3,984.95 and 11,363.02 USD. 
+
+**Figure 5: Individual Medical Costs by Age**
+
+The scatterplot displays a moderate positive correlation between individual medical costs and age, meaning as age increases, insurance charges increase as well. 
+
+**Figure 6: Individual Medical Costs by BMI**
+
+The scatterplot displays a weak positive correlation between individual medical costs and BMI, meaning as BMI increases, insurance charges increase as well. 
+
+```{r warning=FALSE, message=FALSE, echo=FALSE}
+#individual insurance charges by children boxplot
+boxplot(insurance$charge ~ insurance$children, 
+        main = "Figure 1. Individual Medical Costs by Number of Children",
+        xlab = "Number of Children",
+        ylab = "Insurance Charge")
+
+#individual insurance charges by region boxplot
+boxplot(insurance$charges ~ insurance$region,
+        main = "Figure 2. Individual Medical Costs by Geographical Region",
+        xlab = "Region",
+        ylab = "Insurance Charge")
+
+#individual insurance charges by sex boxplot
+boxplot(insurance$charge ~ insurance$sex,
+        main = "Figure 3. Individual Medical Costs by Sex",
+        xlab = "Sex",
+        ylab = "Insurance Charge")
+
+#individual insurance charges by smoking status boxplot
+boxplot(insurance$charge ~ insurance$smoker,
+        main = "Figure 4. Individual Medical Costs by Smoking Status",
+        xlab = "Smoking Status",
+        ylab = "Insurance Charge")
+
+#individual insurance charges by age scatterplot
+plot(insurance$age, insurance$charges,
+     main = "Figure 5. Individual Medical Costs by Age",
+     xlab = "Age",
+     ylab = "Insurance Charge")
+
+#individual insurance charges by bmi scatterplot
+plot(insurance$bmi, insurance$charges,
+     main = "Figure 6. Individual Medical Costs by BMI",
+     xlab = "Body Mass Index (BMI)",
+     ylab = "Insurance Charge")
+```
+
+## Multiple Linear Regression Results
+
+**Age Predicting Insurance Charges**  
+
+A one year change in respondents' age corresponds to a 257.19 USD average increase in insurance charges, all other variables held constant. This finding is statistically significant at a 0.05 alpha level.      
+
+**BMI Predicting Insurance Charges**     
+
+A one kg/m^2^ change in respondents' BMI corresponds to a 336.91 USD average increase in insurance charges, all other variables held constant. This finding is statistically significant at a 0.05 alpha level.     
+
+**Geographical Region Predicting Insurance Charges**      
+
+* Compared to respondents from the Northeast region of the United States, we would expect insurance charges for respondents in the Northwest region to be 380.04 USD less, on average, all other variables held constant. 
+
+* Compared to respondents from the Northeast region of the United States, we would expect insurance charges for respondents in the Southeast region to be 1033.14 USD less, on average, all other variables held constant. This finding is statistically significant at a 0.05 alpha level.
+
+* Compared to respondents from the Northeast region of the United States, we would expect insurance charges for respondents in the Southwest region to be 952.89 USD less, on average, all other variables held constant. This finding is statistically significant at a 0.05 alpha level.
+
+**Number of Children Predicting Insurance Charges**
+
+* Compared to respondents with no children, we would expect insurance charges for respondents with one child to be 390.98 USD more, on average, all other variables held constant. 
+
+* Compared to respondents with no children, we would expect insurance charges for respondents with two children to be 1,635.78 USD more, on average, all other variables held constant. This finding is statistically significant at a 0.05 alpha level. 
+
+* Compared to respondents with no children, we would expect insurance charges for respondents with three children to be 964.34 USD more, on average, all other variables held constant.
+
+* Compared to respondents with no children, we would expect insurance charges for respondents with four children to be 2,947.37 USD more, on average, all other variables held constant. This finding is statistically significant at a 0.05 alpha level. 
+
+* Compared to respondents with no children, we would expect insurance charges for respondents with five children to be 964.34 USD more, on average, all other variables held constant.
+
+**Sex Predicting Insurance Charges**
+
+Compared to female respondents, we would expect insurance charges for male respondents to be 1,116.04 USD less, on average, all other variables held constant. 
+
+**Smoking Status Predicting Insurance Charges**
+
+Compared to respondents who do not smoke, we would expect insurance charges for respondents who do smoke to be 23836.41 USD more, on average, all other variables held constant. This finding is statistically significant at a 0.05 alpha level.
+
+```{r  }
+#warning=FALSE, message=FALSE, results="hide", include=FALSE
+
+#ensure four variables are categorical
+insurance$children <- as.factor(insurance$children)
+insurance$region <- as.factor(insurance$region)
+insurance$sex <- as.factor(insurance$sex)
+insurance$smoker <-as.factor(insurance$smoker)
+
+#run multiple linear regression model
+model <- lm(charges ~ age + bmi + children + region + sex + smoker, data = insurance)
+summary(model)
+
+```
+
+## Linear Regression Assumptions
+The homoscedasticity assumption was violated because, looking at the Scale-Location plot, the red line has a positive slope instead of being flat and horizontal. Additionally, the data points are not randomly spread out as they are heavily concentrated below the red line and scattered above the red line, beginning around 1.0 on the y-axis. 
+
+```{r warning=FALSE, message=FALSE, echo=FALSE}
+#regression assumption plots 
+plot(model)
+```
+
